@@ -3,27 +3,35 @@ use crate::book::{Book, BorrowStatus};
 
 mod book;
 
-fn borrow_book(mut book: Book) -> Option<Book> {
-    match book.is_available {
+fn borrow_book(mut book: Book, name: String) -> Book {
+    return match book.is_available {
         BorrowStatus::Available => {
             book.is_available = Borrowed;
-            return Some(book);
+            book.borrower_name = Some(name);
+            println!("Successfully borrowed: {}!", book.name);
+            book
         }
         Borrowed => {
-            None
+            println!("Book is already borrowed by ");
+            book
         }
     }
 }
 
+fn return_book(mut book: Book) -> Book {
+    book.is_available = BorrowStatus::Available;
+    book.borrower_name = None;
+    book
+}
+
 fn main() {
-    let x = Book {
+    let mut x = Book {
         name: "Alice in Wonderland".to_string(),
         pages: 250,
-        is_available: BorrowStatus::Available
+        is_available: BorrowStatus::Available,
+        borrower_name: None
     };
 
-    match borrow_book(x) {
-        None => println!("Book is already borrowed"),
-        Some(book) => println!("Successfully borrowed: {}!", book.name)
-    }
+    x = borrow_book(x, "Jonathon".to_string());
+
 }

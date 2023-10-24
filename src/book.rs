@@ -8,7 +8,8 @@ pub enum BorrowStatus {
 pub struct Book {
     pub name: String,
     pub pages: u32,
-    pub is_available: BorrowStatus
+    pub is_available: BorrowStatus,
+    pub borrower_name: Option<String>
 }
 
 impl Book {
