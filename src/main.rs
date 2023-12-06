@@ -1,5 +1,7 @@
 use crate::book::{Book, BorrowStatus};
+use crate::menu::{MenuOptions};
 
+mod menu;
 mod book;
 
 fn borrow_book_by_id(books: &mut Vec<Book>, book_id: usize, borrower_name: String) {
@@ -54,26 +56,42 @@ fn load_library() -> Vec<Book> {
     ]
 }
 
+fn print_available_book_titles(books: &Vec<Book>) {
+    for book in books {
+        match book.is_available {
+            BorrowStatus::Available => println!("{}) - {}", book.id, book.name),
+            _ => ()
+        }
+    }
+}
+
+
+
 
 
 fn main() {
-    let mut books: Vec<Book> = load_library();
-    let search_result: Option<usize> = search_library_for_book_by_int(&books, 2);
-    match search_result  {
-        Some(id) => borrow_book_by_id(&mut books, id, String::from("Jonathan")),
-        None => println!("Could not find available book with id")
+    let books: Vec<Book> = load_library();
+    loop {
+        menu::print_menu();
+        let mut menu_option_input = String::new();
+        std::io::stdin().read_line(&mut menu_option_input).unwrap();
+        menu_option_input = String::from(menu_option_input.trim());
+
+        let selected_menu_input = MenuOptions::convert_str_to_menu_option(&menu_option_input);
+        if selected_menu_input.is_none() {
+            println!("Input is not a valid option");
+            continue;
+        }
+        let selected_menu_input = selected_menu_input.unwrap();
+
+        match selected_menu_input {
+            MenuOptions::Borrow => {
+                print_available_book_titles(&books);
+            },
+            MenuOptions::Return => println!("Sorry, the library has not implemented this feature yet"),
+            MenuOptions::Quit => break,
+        }
     }
-    let search_result: Option<usize> = search_library_for_book_by_name(&books, String::from("Alice in Wonderland"));
-    match search_result  {
-        Some(id) => borrow_book_by_id(&mut books, id, String::from("Timmy")),
-        None => println!("Could not find available book with id")
-    }
-    dbg!(&books);
+    println!("Thank you for visiting the library!")
     
-    let search_result: Option<usize> = search_library_for_book_by_name(&mut books, String::from("Alice in Wonderland"));
-    match search_result  {
-        Some(id) => return_book(&mut books, id),
-        None => println!("Could not find book with id")
-    }
-    dbg!(&books);
 }
