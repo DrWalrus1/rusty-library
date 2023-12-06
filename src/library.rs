@@ -1,4 +1,4 @@
-use std::ops::ControlFlow;
+use std::{ops::ControlFlow, io::{self, Write}};
 use crate::library::book::{Book, BorrowStatus};
 pub mod book;
 
@@ -17,9 +17,9 @@ impl Library {
             },
             Book {
                 id: 2,
-                name: "Hunger Games".to_string(),
+                name: "The Hunger Games".to_string(),
                 pages: 500,
-                is_available: BorrowStatus::Borrowed { borrower: "Bob".to_string() },
+                is_available: BorrowStatus::Available
             }
         ];
 
@@ -38,6 +38,8 @@ impl Library {
     pub fn borrow_book(&mut self, username: &String) -> ControlFlow<()> {
         self.print_available_book_titles();
         let mut borrow_book_input = String::new();
+        print!("Book ID: ");
+        io::stdout().flush().unwrap();
         std::io::stdin().read_line(&mut borrow_book_input).unwrap();
         if let Ok(book_id) = borrow_book_input.trim().parse::<u32>() {
             let book_index = self.search_library_for_book_by_int(book_id).unwrap();
